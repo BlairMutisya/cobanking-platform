@@ -1,0 +1,70 @@
+services:
+  auth-db:
+    image: postgres:16-alpine
+    container_name: cobanking-auth-db
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: auth_pass
+    ports:
+      - "5433:5432"
+
+  customer-db:
+    image: postgres:16-alpine
+    container_name: cobanking-customer-db
+    environment:
+      POSTGRES_DB: customer_db
+      POSTGRES_USER: customer_user
+      POSTGRES_PASSWORD: customer_pass
+    ports:
+      - "5434:5432"
+
+  account-db:
+    image: postgres:16-alpine
+    container_name: cobanking-account-db
+    environment:
+      POSTGRES_DB: account_db
+      POSTGRES_USER: account_user
+      POSTGRES_PASSWORD: account_pass
+    ports:
+      - "5435:5432"
+
+  transaction-db:
+    image: postgres:16-alpine
+    container_name: cobanking-transaction-db
+    environment:
+      POSTGRES_DB: transaction_db
+      POSTGRES_USER: transaction_user
+      POSTGRES_PASSWORD: transaction_pass
+    ports:
+      - "5436:5432"
+
+  ledger-db:
+    image: postgres:16-alpine
+    container_name: cobanking-ledger-db
+    environment:
+      POSTGRES_DB: ledger_db
+      POSTGRES_USER: ledger_user
+      POSTGRES_PASSWORD: ledger_pass
+    ports:
+      - "5437:5432"
+
+  audit-db:
+    image: postgres:16-alpine
+    container_name: cobanking-audit-db
+    environment:
+      POSTGRES_DB: audit_db
+      POSTGRES_USER: audit_user
+      POSTGRES_PASSWORD: audit_pass
+    ports:
+      - "5438:5432"
+
+  esb-db:
+    image: postgres:16-alpine
+    container_name: cobanking-esb-db
+    environment:
+      POSTGRES_DB: esb_db
+      POSTGRES_USER: esb_user
+      POSTGRES_PASSWORD: esb_pass
+    ports:
+      - "5439:5432"
