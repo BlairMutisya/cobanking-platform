@@ -2,18 +2,28 @@ package com.cobanking.customer.controller;
 
 import com.cobanking.common.api.ApiResponse;
 import com.cobanking.common.api.ServiceInfo;
+import com.cobanking.customer.dto.CreateCustomerRequest;
+import com.cobanking.customer.dto.CustomerResponse;
+import com.cobanking.customer.service.CustomerService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import java.util.UUID;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/customers")
 public class CustomerController {
+    private final CustomerService customerService;
+
+    public CustomerController(CustomerService customerService) {
+        this.customerService = customerService;
+    }
+
     @GetMapping("/health")
     public ApiResponse<ServiceInfo> health() {
         return ApiResponse.ok("Customer service is ready",
@@ -22,13 +32,13 @@ public class CustomerController {
 
     @PostMapping
     public ApiResponse<CustomerResponse> createCustomer(@Valid @RequestBody CreateCustomerRequest request) {
-        return ApiResponse.ok("Customer creation placeholder accepted",
-                new CustomerResponse("customer-id-will-be-generated-later", request.fullName(), request.email()));
+        return ApiResponse.ok("Customer created", customerService.createCustomer(request));
     }
 
-    public record CreateCustomerRequest(@NotBlank String fullName, @NotBlank @Email String email) {
-    }
-
-    public record CustomerResponse(String customerId, String fullName, String email) {
+    @GetMapping("/{customerId}")
+    public ApiResponse<CustomerResponse> getCustomer(
+            @PathVariable UUID customerId,
+            @RequestParam UUID tenantId) {
+        return ApiResponse.ok("Customer found", customerService.getCustomer(tenantId, customerId));
     }
 }

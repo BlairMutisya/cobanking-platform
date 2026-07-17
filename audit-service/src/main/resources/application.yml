@@ -4,6 +4,17 @@ server:
 spring:
   application:
     name: audit-service
+  datasource:
+    url: jdbc:postgresql://localhost:5438/audit_db
+    username: audit_user
+    password: ${AUDIT_DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
 
 management:
   endpoints:

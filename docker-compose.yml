@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_DB: auth_db
       POSTGRES_USER: auth_user
-      POSTGRES_PASSWORD: auth_pass
+      POSTGRES_PASSWORD: ${AUTH_DB_PASSWORD:?Set AUTH_DB_PASSWORD in .env}
     ports:
       - "5433:5432"
 
@@ -15,7 +15,7 @@ services:
     environment:
       POSTGRES_DB: customer_db
       POSTGRES_USER: customer_user
-      POSTGRES_PASSWORD: customer_pass
+      POSTGRES_PASSWORD: ${CUSTOMER_DB_PASSWORD:?Set CUSTOMER_DB_PASSWORD in .env}
     ports:
       - "5434:5432"
 
@@ -25,7 +25,7 @@ services:
     environment:
       POSTGRES_DB: account_db
       POSTGRES_USER: account_user
-      POSTGRES_PASSWORD: account_pass
+      POSTGRES_PASSWORD: ${ACCOUNT_DB_PASSWORD:?Set ACCOUNT_DB_PASSWORD in .env}
     ports:
       - "5435:5432"
 
@@ -35,7 +35,7 @@ services:
     environment:
       POSTGRES_DB: transaction_db
       POSTGRES_USER: transaction_user
-      POSTGRES_PASSWORD: transaction_pass
+      POSTGRES_PASSWORD: ${TRANSACTION_DB_PASSWORD:?Set TRANSACTION_DB_PASSWORD in .env}
     ports:
       - "5436:5432"
 
@@ -45,7 +45,7 @@ services:
     environment:
       POSTGRES_DB: ledger_db
       POSTGRES_USER: ledger_user
-      POSTGRES_PASSWORD: ledger_pass
+      POSTGRES_PASSWORD: ${LEDGER_DB_PASSWORD:?Set LEDGER_DB_PASSWORD in .env}
     ports:
       - "5437:5432"
 
@@ -55,7 +55,7 @@ services:
     environment:
       POSTGRES_DB: audit_db
       POSTGRES_USER: audit_user
-      POSTGRES_PASSWORD: audit_pass
+      POSTGRES_PASSWORD: ${AUDIT_DB_PASSWORD:?Set AUDIT_DB_PASSWORD in .env}
     ports:
       - "5438:5432"
 
@@ -65,6 +65,6 @@ services:
     environment:
       POSTGRES_DB: esb_db
       POSTGRES_USER: esb_user
-      POSTGRES_PASSWORD: esb_pass
+      POSTGRES_PASSWORD: ${ESB_DB_PASSWORD:?Set ESB_DB_PASSWORD in .env}
     ports:
       - "5439:5432"
