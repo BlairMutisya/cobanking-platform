@@ -2,7 +2,7 @@ package com.cobanking.ledger.service.impl;
 
 import com.cobanking.common.exception.BusinessException;
 import com.cobanking.common.exception.ResourceNotFoundException;
-import com.cobanking.ledger.entity.EntryType;
+import com.cobanking.ledger.enums.EntryType;
 import com.cobanking.ledger.entity.LedgerBatch;
 import com.cobanking.ledger.entity.LedgerEntry;
 import com.cobanking.ledger.dto.response.LedgerBatchResponse;

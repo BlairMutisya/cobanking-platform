@@ -1,5 +1,7 @@
 package com.cobanking.account.entity;
 
+import com.cobanking.account.enums.AccountStatus;
+import com.cobanking.account.enums.AccountType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

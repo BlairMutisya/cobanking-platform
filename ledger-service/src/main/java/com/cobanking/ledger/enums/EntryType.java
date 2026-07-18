@@ -1,4 +1,4 @@
-package com.cobanking.ledger.entity;
+package com.cobanking.ledger.enums;
 
 public enum EntryType {
     DEBIT,

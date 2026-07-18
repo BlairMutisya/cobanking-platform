@@ -1,7 +1,7 @@
 package com.cobanking.account.dto.response;
 
-import com.cobanking.account.entity.AccountStatus;
-import com.cobanking.account.entity.AccountType;
+import com.cobanking.account.enums.AccountStatus;
+import com.cobanking.account.enums.AccountType;
 import java.time.Instant;
 import java.util.UUID;
 

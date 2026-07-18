@@ -1,5 +1,6 @@
 package com.cobanking.customer.entity;
 
+import com.cobanking.customer.enums.CustomerStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

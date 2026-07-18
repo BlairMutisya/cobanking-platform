@@ -1,5 +1,6 @@
 package com.cobanking.ledger.entity;
 
+import com.cobanking.ledger.enums.EntryType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

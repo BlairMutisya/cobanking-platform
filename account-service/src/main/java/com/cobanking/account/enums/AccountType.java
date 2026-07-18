@@ -1,4 +1,4 @@
-package com.cobanking.account.entity;
+package com.cobanking.account.enums;
 
 public enum AccountType {
     SAVINGS,

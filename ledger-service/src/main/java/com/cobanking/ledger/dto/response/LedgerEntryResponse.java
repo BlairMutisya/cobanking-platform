@@ -1,6 +1,6 @@
 package com.cobanking.ledger.dto.response;
 
-import com.cobanking.ledger.entity.EntryType;
+import com.cobanking.ledger.enums.EntryType;
 import java.math.BigDecimal;
 import java.util.UUID;
 

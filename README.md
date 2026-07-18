@@ -23,6 +23,7 @@ Services use this package shape as they grow:
 - `service.impl`: service implementations.
 - `repository`: database access.
 - `entity`: JPA entities.
+- `enums`: service-specific enums.
 - `dto.request`: request payloads.
 - `dto.response`: response payloads.
 

@@ -1,6 +1,6 @@
 package com.cobanking.customer.dto.response;
 
-import com.cobanking.customer.entity.CustomerStatus;
+import com.cobanking.customer.enums.CustomerStatus;
 import java.time.Instant;
 import java.util.UUID;
 

@@ -1,4 +1,4 @@
-package com.cobanking.transaction.entity;
+package com.cobanking.transaction.enums;
 
 public enum TransactionStatus {
     RECEIVED,

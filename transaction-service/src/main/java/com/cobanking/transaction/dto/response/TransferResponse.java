@@ -1,6 +1,6 @@
 package com.cobanking.transaction.dto.response;
 
-import com.cobanking.transaction.entity.TransactionStatus;
+import com.cobanking.transaction.enums.TransactionStatus;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;

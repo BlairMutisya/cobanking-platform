@@ -1,6 +1,6 @@
 package com.cobanking.account.dto.request;
 
-import com.cobanking.account.entity.AccountType;
+import com.cobanking.account.enums.AccountType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
