@@ -128,7 +128,12 @@ Invoke-RestMethod -Method Post http://localhost:8083/transactions/transfers `
   -Body '{"tenantId":"11111111-1111-1111-1111-111111111111","debitAccountId":"<debit account UUID>","creditAccountId":"<credit account UUID>","amount":250.00,"currency":"KES"}'
 ```
 
-The transaction service validates both accounts first. It checks that each account exists, belongs to the same tenant, is active, and uses the same currency as the transfer. Then it stores the transfer request, calls ledger service, and receives a ledger batch UUID when posting succeeds.
+The transaction service validates both accounts first. It checks that each account exists, belongs to the same tenant, is active, and uses the same currency as the transfer. Then it stores the transfer request, records `TRANSFER_RECEIVED`, calls ledger service, and receives a ledger batch UUID when posting succeeds.
+
+When ledger posting completes, transaction service records one of these audit events:
+
+- `TRANSFER_POSTED`
+- `TRANSFER_FAILED`
 
 Fetch a transaction:
 

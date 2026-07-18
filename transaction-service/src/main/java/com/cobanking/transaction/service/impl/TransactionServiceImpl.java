@@ -3,6 +3,7 @@ package com.cobanking.transaction.service.impl;
 import com.cobanking.common.exception.BusinessException;
 import com.cobanking.common.exception.ResourceNotFoundException;
 import com.cobanking.transaction.client.AccountClient;
+import com.cobanking.transaction.client.AuditClient;
 import com.cobanking.transaction.client.LedgerClient;
 import com.cobanking.transaction.entity.TransferTransaction;
 import com.cobanking.transaction.dto.request.TransferRequest;
@@ -18,14 +19,17 @@ import org.springframework.web.client.RestClientException;
 public class TransactionServiceImpl implements TransactionService {
     private final TransferTransactionRepository transferTransactionRepository;
     private final AccountClient accountClient;
+    private final AuditClient auditClient;
     private final LedgerClient ledgerClient;
 
     public TransactionServiceImpl(
             TransferTransactionRepository transferTransactionRepository,
             AccountClient accountClient,
+            AuditClient auditClient,
             LedgerClient ledgerClient) {
         this.transferTransactionRepository = transferTransactionRepository;
         this.accountClient = accountClient;
+        this.auditClient = auditClient;
         this.ledgerClient = ledgerClient;
     }
 
@@ -60,12 +64,15 @@ public class TransactionServiceImpl implements TransactionService {
                 request.currency());
 
         TransferTransaction savedTransaction = transferTransactionRepository.saveAndFlush(transaction);
+        auditClient.recordTransferEvent("TRANSFER_RECEIVED", savedTransaction);
 
         try {
             LedgerClient.LedgerBatchResponse ledgerBatch = ledgerClient.postTransfer(savedTransaction);
             savedTransaction.markPosted(ledgerBatch.batchId());
+            auditClient.recordTransferEvent("TRANSFER_POSTED", savedTransaction);
         } catch (RestClientException exception) {
             savedTransaction.markFailed("Ledger posting failed");
+            auditClient.recordTransferEvent("TRANSFER_FAILED", savedTransaction);
         }
 
         return toResponse(savedTransaction);
