@@ -101,6 +101,12 @@ Invoke-RestMethod -Method Post http://localhost:8082/accounts `
   -Body '{"tenantId":"11111111-1111-1111-1111-111111111111","customerId":"<customer UUID>","accountType":"SAVINGS","currency":"KES"}'
 ```
 
+Validate an account:
+
+```powershell
+Invoke-RestMethod "http://localhost:8082/accounts/<account UUID>/validation?tenantId=11111111-1111-1111-1111-111111111111"
+```
+
 Record an audit event:
 
 ```powershell
@@ -122,7 +128,7 @@ Invoke-RestMethod -Method Post http://localhost:8083/transactions/transfers `
   -Body '{"tenantId":"11111111-1111-1111-1111-111111111111","debitAccountId":"<debit account UUID>","creditAccountId":"<credit account UUID>","amount":250.00,"currency":"KES"}'
 ```
 
-The transaction service stores the transfer request, calls ledger service, and receives a ledger batch UUID when posting succeeds.
+The transaction service validates both accounts first. It checks that each account exists, belongs to the same tenant, is active, and uses the same currency as the transfer. Then it stores the transfer request, calls ledger service, and receives a ledger batch UUID when posting succeeds.
 
 Fetch a transaction:
 

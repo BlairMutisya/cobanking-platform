@@ -1,6 +1,7 @@
 package com.cobanking.account.controller;
 
 import com.cobanking.account.dto.response.AccountResponse;
+import com.cobanking.account.dto.response.AccountValidationResponse;
 import com.cobanking.account.dto.request.OpenAccountRequest;
 import com.cobanking.account.service.AccountService;
 import com.cobanking.common.api.BaseApiResponse;
@@ -46,5 +47,14 @@ public class AccountController {
             @PathVariable UUID accountId,
             @RequestParam UUID tenantId) {
         return BaseApiResponse.success("Account found", accountService.getAccount(tenantId, accountId));
+    }
+
+    @GetMapping("/{accountId}/validation")
+    @Operation(summary = "Validate an account for transactions")
+    public BaseApiResponse<AccountValidationResponse> validateAccount(
+            @PathVariable UUID accountId,
+            @RequestParam UUID tenantId) {
+        return BaseApiResponse.success("Account validation completed",
+                accountService.validateAccount(tenantId, accountId));
     }
 }

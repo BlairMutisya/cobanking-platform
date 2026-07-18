@@ -16,7 +16,7 @@ public class LedgerClient {
 
     public LedgerClient(RestClient.Builder restClientBuilder, TransactionServiceProperties properties) {
         this.restClient = restClientBuilder
-                .baseUrl(properties.baseUrl())
+                .baseUrl(properties.ledger().baseUrl())
                 .build();
     }
 

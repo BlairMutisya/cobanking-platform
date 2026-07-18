@@ -2,7 +2,9 @@ package com.cobanking.account.service.impl;
 
 import com.cobanking.account.entity.Account;
 import com.cobanking.account.client.AuditClient;
+import com.cobanking.account.enums.AccountStatus;
 import com.cobanking.account.dto.response.AccountResponse;
+import com.cobanking.account.dto.response.AccountValidationResponse;
 import com.cobanking.account.dto.request.OpenAccountRequest;
 import com.cobanking.account.repository.AccountRepository;
 import com.cobanking.account.service.AccountNumberGenerator;
@@ -51,6 +53,21 @@ public class AccountServiceImpl implements AccountService {
                 .orElseThrow(() -> new ResourceNotFoundException("ACCOUNT_NOT_FOUND", "Account was not found"));
 
         return toResponse(account);
+    }
+
+    @Transactional(readOnly = true)
+    public AccountValidationResponse validateAccount(UUID tenantId, UUID accountId) {
+        Account account = accountRepository.findByTenantIdAndId(tenantId, accountId)
+                .orElseThrow(() -> new ResourceNotFoundException("ACCOUNT_NOT_FOUND", "Account was not found"));
+
+        boolean active = account.getStatus() == AccountStatus.ACTIVE;
+        return new AccountValidationResponse(
+                account.getId(),
+                account.getTenantId(),
+                account.getCurrency(),
+                account.getStatus(),
+                active,
+                active ? "Account is valid for transactions" : "Account is not active");
     }
 
     private String nextUniqueAccountNumber() {

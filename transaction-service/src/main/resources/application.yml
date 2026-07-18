@@ -26,3 +26,5 @@ cobanking:
   services:
     ledger:
       base-url: ${LEDGER_SERVICE_BASE_URL:http://localhost:8086}
+    account:
+      base-url: ${ACCOUNT_SERVICE_BASE_URL:http://localhost:8082}
