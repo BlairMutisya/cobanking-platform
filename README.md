@@ -42,6 +42,20 @@ Run one service:
 mvn -pl auth-service spring-boot:run
 ```
 
+## Swagger / OpenAPI
+
+Each service exposes generated API docs when it is running:
+
+- Auth: `http://localhost:8081/swagger-ui.html`
+- Customer: `http://localhost:8084/swagger-ui.html`
+- Account: `http://localhost:8082/swagger-ui.html`
+- Transaction: `http://localhost:8083/swagger-ui.html`
+- Ledger: `http://localhost:8086/swagger-ui.html`
+- Audit: `http://localhost:8085/swagger-ui.html`
+- ESB: `http://localhost:8090/swagger-ui.html`
+
+OpenAPI JSON is available at `/v3/api-docs` on each service.
+
 The first goal is not full banking behavior yet. It is a clean, runnable foundation that we can grow safely.
 
 ## Phase 1B Sample Flow

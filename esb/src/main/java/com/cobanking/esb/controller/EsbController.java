@@ -2,6 +2,8 @@ package com.cobanking.esb.controller;
 
 import com.cobanking.common.api.ApiResponse;
 import com.cobanking.common.api.ServiceInfo;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import java.time.Instant;
@@ -14,14 +16,17 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/esb")
+@Tag(name = "ESB", description = "Reactive integration routing endpoints")
 public class EsbController {
     @GetMapping("/health")
+    @Operation(summary = "Check ESB health")
     public Mono<ApiResponse<ServiceInfo>> health() {
         return Mono.just(ApiResponse.ok("ESB is ready",
                 new ServiceInfo("esb", "UP", "Reactive integration foundation")));
     }
 
     @PostMapping("/routes/{routeKey}/dispatch")
+    @Operation(summary = "Dispatch a message through an ESB route")
     public Mono<ApiResponse<DispatchResponse>> dispatch(
             @org.springframework.web.bind.annotation.PathVariable String routeKey,
             @Valid @RequestBody DispatchRequest request) {
