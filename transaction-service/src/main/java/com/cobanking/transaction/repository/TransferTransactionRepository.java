@@ -1,6 +1,6 @@
 package com.cobanking.transaction.repository;
 
-import com.cobanking.transaction.domain.TransferTransaction;
+import com.cobanking.transaction.entity.TransferTransaction;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;

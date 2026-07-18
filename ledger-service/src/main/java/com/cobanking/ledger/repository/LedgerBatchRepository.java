@@ -1,6 +1,6 @@
 package com.cobanking.ledger.repository;
 
-import com.cobanking.ledger.domain.LedgerBatch;
+import com.cobanking.ledger.entity.LedgerBatch;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;

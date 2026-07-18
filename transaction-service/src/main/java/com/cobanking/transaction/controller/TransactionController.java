@@ -1,9 +1,9 @@
 package com.cobanking.transaction.controller;
 
-import com.cobanking.common.api.ApiResponse;
+import com.cobanking.common.api.BaseApiResponse;
 import com.cobanking.common.api.ServiceInfo;
-import com.cobanking.transaction.dto.TransferRequest;
-import com.cobanking.transaction.dto.TransferResponse;
+import com.cobanking.transaction.dto.request.TransferRequest;
+import com.cobanking.transaction.dto.response.TransferResponse;
 import com.cobanking.transaction.service.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -31,25 +31,25 @@ public class TransactionController {
 
     @GetMapping("/health")
     @Operation(summary = "Check transaction service health")
-    public ApiResponse<ServiceInfo> health() {
-        return ApiResponse.ok("Transaction service is ready",
+    public BaseApiResponse<ServiceInfo> health() {
+        return BaseApiResponse.success("Transaction service is ready",
                 new ServiceInfo("transaction-service", "UP", "Transaction orchestration foundation"));
     }
 
     @PostMapping("/transfers")
     @Operation(summary = "Request a transfer", description = "Receives a transfer request using an idempotency key to prevent duplicate processing")
-    public ApiResponse<TransferResponse> requestTransfer(
+    public BaseApiResponse<TransferResponse> requestTransfer(
             @Parameter(description = "Unique request key used to avoid duplicate transfer processing")
             @RequestHeader("Idempotency-Key") String idempotencyKey,
             @Valid @RequestBody TransferRequest request) {
-        return ApiResponse.ok("Transfer processed", transactionService.requestTransfer(idempotencyKey, request));
+        return BaseApiResponse.success("Transfer processed", transactionService.requestTransfer(idempotencyKey, request));
     }
 
     @GetMapping("/{transactionId}")
     @Operation(summary = "Get a transaction by UUID")
-    public ApiResponse<TransferResponse> getTransaction(
+    public BaseApiResponse<TransferResponse> getTransaction(
             @PathVariable UUID transactionId,
             @RequestParam UUID tenantId) {
-        return ApiResponse.ok("Transaction found", transactionService.getTransaction(tenantId, transactionId));
+        return BaseApiResponse.success("Transaction found", transactionService.getTransaction(tenantId, transactionId));
     }
 }

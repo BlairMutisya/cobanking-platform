@@ -1,6 +1,6 @@
 package com.cobanking.auth.controller;
 
-import com.cobanking.common.api.ApiResponse;
+import com.cobanking.common.api.BaseApiResponse;
 import com.cobanking.common.api.ServiceInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,15 +18,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     @GetMapping("/health")
     @Operation(summary = "Check auth service health")
-    public ApiResponse<ServiceInfo> health() {
-        return ApiResponse.ok("Auth service is ready",
+    public BaseApiResponse<ServiceInfo> health() {
+        return BaseApiResponse.success("Auth service is ready",
                 new ServiceInfo("auth-service", "UP", "Identity and access foundation"));
     }
 
     @PostMapping("/login")
     @Operation(summary = "Login placeholder", description = "Temporary login endpoint until JWT security is implemented")
-    public ApiResponse<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
-        return ApiResponse.ok("Login placeholder accepted",
+    public BaseApiResponse<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+        return BaseApiResponse.success("Login placeholder accepted",
                 new LoginResponse(request.username(), "jwt-token-will-be-added-in-security-phase"));
     }
 

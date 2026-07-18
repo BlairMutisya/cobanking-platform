@@ -1,7 +1,7 @@
 package com.cobanking.account.client;
 
 import com.cobanking.account.config.AccountServiceProperties;
-import com.cobanking.account.domain.Account;
+import com.cobanking.account.entity.Account;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

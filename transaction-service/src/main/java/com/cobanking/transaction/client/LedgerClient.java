@@ -1,7 +1,7 @@
 package com.cobanking.transaction.client;
 
 import com.cobanking.transaction.config.TransactionServiceProperties;
-import com.cobanking.transaction.domain.TransferTransaction;
+import com.cobanking.transaction.entity.TransferTransaction;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;

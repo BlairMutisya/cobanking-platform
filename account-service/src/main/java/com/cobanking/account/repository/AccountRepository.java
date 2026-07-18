@@ -1,6 +1,6 @@
 package com.cobanking.account.repository;
 
-import com.cobanking.account.domain.Account;
+import com.cobanking.account.entity.Account;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;

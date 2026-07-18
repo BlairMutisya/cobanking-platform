@@ -1,9 +1,9 @@
 package com.cobanking.audit.controller;
 
-import com.cobanking.audit.dto.AuditEventResponse;
-import com.cobanking.audit.dto.RecordAuditEventRequest;
+import com.cobanking.audit.dto.response.AuditEventResponse;
+import com.cobanking.audit.dto.request.RecordAuditEventRequest;
 import com.cobanking.audit.service.AuditService;
-import com.cobanking.common.api.ApiResponse;
+import com.cobanking.common.api.BaseApiResponse;
 import com.cobanking.common.api.ServiceInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,20 +29,20 @@ public class AuditController {
 
     @GetMapping("/health")
     @Operation(summary = "Check audit service health")
-    public ApiResponse<ServiceInfo> health() {
-        return ApiResponse.ok("Audit service is ready",
+    public BaseApiResponse<ServiceInfo> health() {
+        return BaseApiResponse.success("Audit service is ready",
                 new ServiceInfo("audit-service", "UP", "Compliance audit foundation"));
     }
 
     @PostMapping("/events")
     @Operation(summary = "Record an audit event")
-    public ApiResponse<AuditEventResponse> recordEvent(@Valid @RequestBody RecordAuditEventRequest request) {
-        return ApiResponse.ok("Audit event recorded", auditService.recordEvent(request));
+    public BaseApiResponse<AuditEventResponse> recordEvent(@Valid @RequestBody RecordAuditEventRequest request) {
+        return BaseApiResponse.success("Audit event recorded", auditService.recordEvent(request));
     }
 
     @GetMapping("/events")
     @Operation(summary = "Get recent audit events for a tenant")
-    public ApiResponse<List<AuditEventResponse>> getRecentEvents(@RequestParam UUID tenantId) {
-        return ApiResponse.ok("Audit events found", auditService.getRecentEvents(tenantId));
+    public BaseApiResponse<List<AuditEventResponse>> getRecentEvents(@RequestParam UUID tenantId) {
+        return BaseApiResponse.success("Audit events found", auditService.getRecentEvents(tenantId));
     }
 }

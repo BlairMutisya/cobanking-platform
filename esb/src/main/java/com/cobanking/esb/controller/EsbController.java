@@ -1,6 +1,6 @@
 package com.cobanking.esb.controller;
 
-import com.cobanking.common.api.ApiResponse;
+import com.cobanking.common.api.BaseApiResponse;
 import com.cobanking.common.api.ServiceInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,18 +20,18 @@ import reactor.core.publisher.Mono;
 public class EsbController {
     @GetMapping("/health")
     @Operation(summary = "Check ESB health")
-    public Mono<ApiResponse<ServiceInfo>> health() {
-        return Mono.just(ApiResponse.ok("ESB is ready",
+    public Mono<BaseApiResponse<ServiceInfo>> health() {
+        return Mono.just(BaseApiResponse.success("ESB is ready",
                 new ServiceInfo("esb", "UP", "Reactive integration foundation")));
     }
 
     @PostMapping("/routes/{routeKey}/dispatch")
     @Operation(summary = "Dispatch a message through an ESB route")
-    public Mono<ApiResponse<DispatchResponse>> dispatch(
+    public Mono<BaseApiResponse<DispatchResponse>> dispatch(
             @org.springframework.web.bind.annotation.PathVariable String routeKey,
             @Valid @RequestBody DispatchRequest request) {
         var response = new DispatchResponse(routeKey, request.correlationId(), "ROUTE_ACCEPTED", Instant.now());
-        return Mono.just(ApiResponse.ok("Dispatch placeholder accepted", response));
+        return Mono.just(BaseApiResponse.success("Dispatch placeholder accepted", response));
     }
 
     public record DispatchRequest(@NotBlank String correlationId, @NotBlank String payload) {

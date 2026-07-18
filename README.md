@@ -14,6 +14,28 @@ Phase 1 foundation for a Spring Boot co-banking learning project with a custom E
 - `audit-service`: audit trail foundation.
 - `esb`: custom integration layer foundation.
 
+## Service Code Structure
+
+Services use this package shape as they grow:
+
+- `controller`: REST endpoints.
+- `service`: service interfaces.
+- `service.impl`: service implementations.
+- `repository`: database access.
+- `entity`: JPA entities.
+- `dto.request`: request payloads.
+- `dto.response`: response payloads.
+
+All service endpoints return `BaseApiResponse<T>`:
+
+```json
+{
+  "status": 1,
+  "message": "Operation completed",
+  "data": {}
+}
+```
+
 ## Run Locally
 
 Create your local environment file first:

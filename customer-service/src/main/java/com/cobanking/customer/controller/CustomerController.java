@@ -1,9 +1,9 @@
 package com.cobanking.customer.controller;
 
-import com.cobanking.common.api.ApiResponse;
+import com.cobanking.common.api.BaseApiResponse;
 import com.cobanking.common.api.ServiceInfo;
-import com.cobanking.customer.dto.CreateCustomerRequest;
-import com.cobanking.customer.dto.CustomerResponse;
+import com.cobanking.customer.dto.request.CreateCustomerRequest;
+import com.cobanking.customer.dto.response.CustomerResponse;
 import com.cobanking.customer.service.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,22 +29,22 @@ public class CustomerController {
 
     @GetMapping("/health")
     @Operation(summary = "Check customer service health")
-    public ApiResponse<ServiceInfo> health() {
-        return ApiResponse.ok("Customer service is ready",
+    public BaseApiResponse<ServiceInfo> health() {
+        return BaseApiResponse.success("Customer service is ready",
                 new ServiceInfo("customer-service", "UP", "Customer profile foundation"));
     }
 
     @PostMapping
     @Operation(summary = "Create a customer", description = "Creates a customer under a tenant using UUID identifiers")
-    public ApiResponse<CustomerResponse> createCustomer(@Valid @RequestBody CreateCustomerRequest request) {
-        return ApiResponse.ok("Customer created", customerService.createCustomer(request));
+    public BaseApiResponse<CustomerResponse> createCustomer(@Valid @RequestBody CreateCustomerRequest request) {
+        return BaseApiResponse.success("Customer created", customerService.createCustomer(request));
     }
 
     @GetMapping("/{customerId}")
     @Operation(summary = "Get a customer by UUID")
-    public ApiResponse<CustomerResponse> getCustomer(
+    public BaseApiResponse<CustomerResponse> getCustomer(
             @PathVariable UUID customerId,
             @RequestParam UUID tenantId) {
-        return ApiResponse.ok("Customer found", customerService.getCustomer(tenantId, customerId));
+        return BaseApiResponse.success("Customer found", customerService.getCustomer(tenantId, customerId));
     }
 }
