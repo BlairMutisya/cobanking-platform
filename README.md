@@ -85,3 +85,37 @@ Invoke-RestMethod -Method Post http://localhost:8085/audit/events `
   -ContentType "application/json" `
   -Body '{"tenantId":"11111111-1111-1111-1111-111111111111","actor":"system","action":"ACCOUNT_OPENED","resource":"ACCOUNT","resourceId":"<account UUID>","metadata":"{\"channel\":\"api\"}"}'
 ```
+
+## Phase 1C Transfer + Ledger Flow
+
+Transfers use an `Idempotency-Key` header. If the same request is retried with the same key, the transaction service returns the existing transaction instead of creating a duplicate.
+
+Request a transfer:
+
+```powershell
+Invoke-RestMethod -Method Post http://localhost:8083/transactions/transfers `
+  -Headers @{"Idempotency-Key"="transfer-demo-001"} `
+  -ContentType "application/json" `
+  -Body '{"tenantId":"11111111-1111-1111-1111-111111111111","debitAccountId":"<debit account UUID>","creditAccountId":"<credit account UUID>","amount":250.00,"currency":"KES"}'
+```
+
+The transaction service stores the transfer request, calls ledger service, and receives a ledger batch UUID when posting succeeds.
+
+Fetch a transaction:
+
+```powershell
+Invoke-RestMethod "http://localhost:8083/transactions/<transaction UUID>?tenantId=11111111-1111-1111-1111-111111111111"
+```
+
+Fetch the ledger batch:
+
+```powershell
+Invoke-RestMethod "http://localhost:8086/ledger/batches/<ledger batch UUID>?tenantId=11111111-1111-1111-1111-111111111111"
+```
+
+The ledger service creates two entries for a transfer:
+
+- `DEBIT` from the source account
+- `CREDIT` to the destination account
+
+The debit and credit totals must always balance before the batch is saved.

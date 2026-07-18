@@ -4,9 +4,25 @@ server:
 spring:
   application:
     name: transaction-service
+  datasource:
+    url: jdbc:postgresql://localhost:5436/transaction_db
+    username: transaction_user
+    password: ${TRANSACTION_DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
 
 management:
   endpoints:
     web:
       exposure:
         include: health,info
+
+cobanking:
+  services:
+    ledger:
+      base-url: ${LEDGER_SERVICE_BASE_URL:http://localhost:8086}
