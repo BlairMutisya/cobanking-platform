@@ -2,6 +2,7 @@ package com.cobanking.ledger.service.impl;
 
 import com.cobanking.common.exception.BusinessException;
 import com.cobanking.common.exception.ResourceNotFoundException;
+import com.cobanking.ledger.client.AuditClient;
 import com.cobanking.ledger.enums.EntryType;
 import com.cobanking.ledger.entity.LedgerBatch;
 import com.cobanking.ledger.entity.LedgerEntry;
@@ -14,13 +15,17 @@ import java.math.BigDecimal;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Service
 public class LedgerServiceImpl implements LedgerService {
     private final LedgerBatchRepository ledgerBatchRepository;
+    private final AuditClient auditClient;
 
-    public LedgerServiceImpl(LedgerBatchRepository ledgerBatchRepository) {
+    public LedgerServiceImpl(LedgerBatchRepository ledgerBatchRepository, AuditClient auditClient) {
         this.ledgerBatchRepository = ledgerBatchRepository;
+        this.auditClient = auditClient;
     }
 
     @Transactional
@@ -53,7 +58,10 @@ public class LedgerServiceImpl implements LedgerService {
         batch.addEntry(new LedgerEntry(request.creditAccountId(), EntryType.CREDIT, request.amount()));
         ensureBalanced(batch);
 
-        return toResponse(ledgerBatchRepository.save(batch));
+        LedgerBatch savedBatch = ledgerBatchRepository.save(batch);
+        recordLedgerBatchPostedAfterCommit(savedBatch);
+
+        return toResponse(savedBatch);
     }
 
     private void ensureBalanced(LedgerBatch batch) {
@@ -70,6 +78,20 @@ public class LedgerServiceImpl implements LedgerService {
         if (debitTotal.compareTo(creditTotal) != 0) {
             throw new BusinessException("LEDGER_NOT_BALANCED", "Ledger entries must balance before posting");
         }
+    }
+
+    private void recordLedgerBatchPostedAfterCommit(LedgerBatch batch) {
+        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+            auditClient.recordLedgerBatchPosted(batch);
+            return;
+        }
+
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                auditClient.recordLedgerBatchPosted(batch);
+            }
+        });
     }
 
     private LedgerBatchResponse toResponse(LedgerBatch batch) {

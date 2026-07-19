@@ -152,4 +152,4 @@ The ledger service creates two entries for a transfer:
 - `DEBIT` from the source account
 - `CREDIT` to the destination account
 
-The debit and credit totals must always balance before the batch is saved.
+The debit and credit totals must always balance before the batch is saved. After a balanced batch is committed, ledger service records a `LEDGER_BATCH_POSTED` audit event.
