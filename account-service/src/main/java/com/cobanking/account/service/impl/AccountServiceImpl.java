@@ -1,34 +1,32 @@
 package com.cobanking.account.service.impl;
 
 import com.cobanking.account.entity.Account;
-import com.cobanking.account.client.AuditClient;
 import com.cobanking.account.enums.AccountStatus;
 import com.cobanking.account.dto.response.AccountResponse;
 import com.cobanking.account.dto.response.AccountValidationResponse;
 import com.cobanking.account.dto.request.OpenAccountRequest;
 import com.cobanking.account.repository.AccountRepository;
+import com.cobanking.account.outbox.AuditOutboxService;
 import com.cobanking.account.service.AccountNumberGenerator;
 import com.cobanking.account.service.AccountService;
 import com.cobanking.common.exception.ResourceNotFoundException;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Service
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final AccountNumberGenerator accountNumberGenerator;
-    private final AuditClient auditClient;
+    private final AuditOutboxService auditOutboxService;
 
     public AccountServiceImpl(
             AccountRepository accountRepository,
             AccountNumberGenerator accountNumberGenerator,
-            AuditClient auditClient) {
+            AuditOutboxService auditOutboxService) {
         this.accountRepository = accountRepository;
         this.accountNumberGenerator = accountNumberGenerator;
-        this.auditClient = auditClient;
+        this.auditOutboxService = auditOutboxService;
     }
 
     @Transactional
@@ -42,7 +40,7 @@ public class AccountServiceImpl implements AccountService {
                 request.currency());
 
         Account savedAccount = accountRepository.save(account);
-        recordAccountOpenedAfterCommit(savedAccount);
+        auditOutboxService.recordAccountOpened(savedAccount);
 
         return toResponse(savedAccount);
     }
@@ -76,20 +74,6 @@ public class AccountServiceImpl implements AccountService {
             accountNumber = accountNumberGenerator.generate();
         } while (accountRepository.existsByAccountNumber(accountNumber));
         return accountNumber;
-    }
-
-    private void recordAccountOpenedAfterCommit(Account account) {
-        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
-            auditClient.recordAccountOpened(account);
-            return;
-        }
-
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                auditClient.recordAccountOpened(account);
-            }
-        });
     }
 
     private AccountResponse toResponse(Account account) {

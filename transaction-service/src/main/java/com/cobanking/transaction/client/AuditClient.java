@@ -1,18 +1,13 @@
 package com.cobanking.transaction.client;
 
 import com.cobanking.transaction.config.TransactionServiceProperties;
-import com.cobanking.transaction.entity.TransferTransaction;
+import com.cobanking.transaction.outbox.AuditOutboxEvent;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientException;
 
 @Component
 public class AuditClient {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuditClient.class);
-
     private final RestClient restClient;
 
     public AuditClient(RestClient.Builder restClientBuilder, TransactionServiceProperties properties) {
@@ -21,16 +16,12 @@ public class AuditClient {
                 .build();
     }
 
-    public void recordTransferEvent(String action, TransferTransaction transaction) {
-        try {
-            restClient.post()
-                    .uri("/audit/events")
-                    .body(RecordAuditEventRequest.forTransfer(action, transaction))
-                    .retrieve()
-                    .toBodilessEntity();
-        } catch (RestClientException exception) {
-            LOGGER.warn("Failed to record {} audit event for transaction {}", action, transaction.getId(), exception);
-        }
+    public void publish(AuditOutboxEvent event) {
+        restClient.post()
+                .uri("/audit/events")
+                .body(RecordAuditEventRequest.from(event))
+                .retrieve()
+                .toBodilessEntity();
     }
 
     private record RecordAuditEventRequest(
@@ -41,25 +32,14 @@ public class AuditClient {
             UUID resourceId,
             String metadata
     ) {
-        static RecordAuditEventRequest forTransfer(String action, TransferTransaction transaction) {
-            String metadata = """
-                    {"debitAccountId":"%s","creditAccountId":"%s","amount":%s,"currency":"%s","status":"%s","ledgerBatchId":"%s","failureReason":"%s"}
-                    """.formatted(
-                    transaction.getDebitAccountId(),
-                    transaction.getCreditAccountId(),
-                    transaction.getAmount(),
-                    transaction.getCurrency(),
-                    transaction.getStatus(),
-                    transaction.getLedgerBatchId(),
-                    transaction.getFailureReason());
-
+        static RecordAuditEventRequest from(AuditOutboxEvent event) {
             return new RecordAuditEventRequest(
-                    transaction.getTenantId(),
-                    "transaction-service",
-                    action,
-                    "TRANSFER_TRANSACTION",
-                    transaction.getId(),
-                    metadata.strip());
+                    event.getTenantId(),
+                    event.getActor(),
+                    event.getAction(),
+                    event.getResource(),
+                    event.getResourceId(),
+                    event.getMetadata());
         }
     }
 }

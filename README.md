@@ -37,6 +37,18 @@ All service endpoints return `BaseApiResponse<T>`:
 }
 ```
 
+## Audit Outbox Pattern
+
+Services that produce audit events do not call `audit-service` directly inside the main business flow anymore. They save audit messages into a local `audit_outbox_events` table in the same database transaction as the business change.
+
+Current producers:
+
+- `account-service`: `ACCOUNT_OPENED`
+- `transaction-service`: `TRANSFER_RECEIVED`, `TRANSFER_POSTED`, `TRANSFER_FAILED`
+- `ledger-service`: `LEDGER_BATCH_POSTED`
+
+Each producer has a scheduled publisher that retries pending outbox rows. This prevents losing audit events when `audit-service` is temporarily unavailable.
+
 ## Run Locally
 
 Create your local environment file first:
