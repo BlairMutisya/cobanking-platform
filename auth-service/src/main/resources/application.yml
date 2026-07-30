@@ -5,6 +5,17 @@ spring:
   application:
     name: auth-service
 
+cobanking:
+  security:
+    jwt:
+      issuer: cobanking-auth-service
+      secret: ${JWT_SECRET}
+      ttl-minutes: ${JWT_TTL_MINUTES:60}
+    demo-users:
+      customer-password: ${DEMO_CUSTOMER_PASSWORD}
+      bank-admin-password: ${DEMO_BANK_ADMIN_PASSWORD}
+      system-admin-password: ${DEMO_SYSTEM_ADMIN_PASSWORD}
+
 management:
   endpoints:
     web:

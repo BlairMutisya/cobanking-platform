@@ -1,11 +1,13 @@
 package com.cobanking.auth.controller;
 
+import com.cobanking.auth.dto.request.LoginRequest;
+import com.cobanking.auth.dto.response.LoginResponse;
+import com.cobanking.auth.service.AuthService;
 import com.cobanking.common.api.BaseApiResponse;
 import com.cobanking.common.api.ServiceInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 @Tag(name = "Authentication", description = "Identity and access endpoints")
 public class AuthController {
+    private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
+
     @GetMapping("/health")
     @Operation(summary = "Check auth service health")
     public BaseApiResponse<ServiceInfo> health() {
@@ -24,15 +32,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    @Operation(summary = "Login placeholder", description = "Temporary login endpoint until JWT security is implemented")
+    @Operation(summary = "Login and receive a JWT", description = "Uses demo users for the learning foundation. Later this moves to database-backed users.")
     public BaseApiResponse<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
-        return BaseApiResponse.success("Login placeholder accepted",
-                new LoginResponse(request.username(), "jwt-token-will-be-added-in-security-phase"));
-    }
-
-    public record LoginRequest(@NotBlank String username, @NotBlank String password) {
-    }
-
-    public record LoginResponse(String username, String accessToken) {
+        return BaseApiResponse.success("Login successful", authService.login(request));
     }
 }

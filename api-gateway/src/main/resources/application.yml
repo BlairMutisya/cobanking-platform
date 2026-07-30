@@ -36,6 +36,12 @@ spring:
           predicates:
             - Path=/esb/**
 
+cobanking:
+  security:
+    jwt:
+      issuer: cobanking-auth-service
+      secret: ${JWT_SECRET}
+
 management:
   endpoints:
     web:
