@@ -2,6 +2,8 @@ package com.cobanking.customer.controller;
 
 import com.cobanking.common.api.BaseApiResponse;
 import com.cobanking.common.api.ServiceInfo;
+import com.cobanking.common.security.RequestSecurity;
+import com.cobanking.common.security.SecurityHeaders;
 import com.cobanking.customer.dto.request.CreateCustomerRequest;
 import com.cobanking.customer.dto.response.CustomerResponse;
 import com.cobanking.customer.service.CustomerService;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,15 +39,20 @@ public class CustomerController {
 
     @PostMapping
     @Operation(summary = "Create a customer", description = "Creates a customer under a tenant using UUID identifiers")
-    public BaseApiResponse<CustomerResponse> createCustomer(@Valid @RequestBody CreateCustomerRequest request) {
+    public BaseApiResponse<CustomerResponse> createCustomer(
+            @RequestHeader(value = SecurityHeaders.AUTHENTICATED_TENANT_ID, required = false) String authenticatedTenantId,
+            @Valid @RequestBody CreateCustomerRequest request) {
+        RequestSecurity.requireTenantMatch(request.tenantId(), authenticatedTenantId);
         return BaseApiResponse.success("Customer created", customerService.createCustomer(request));
     }
 
     @GetMapping("/{customerId}")
     @Operation(summary = "Get a customer by UUID")
     public BaseApiResponse<CustomerResponse> getCustomer(
+            @RequestHeader(value = SecurityHeaders.AUTHENTICATED_TENANT_ID, required = false) String authenticatedTenantId,
             @PathVariable UUID customerId,
             @RequestParam UUID tenantId) {
+        RequestSecurity.requireTenantMatch(tenantId, authenticatedTenantId);
         return BaseApiResponse.success("Customer found", customerService.getCustomer(tenantId, customerId));
     }
 }

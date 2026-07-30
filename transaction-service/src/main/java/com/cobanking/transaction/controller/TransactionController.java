@@ -2,6 +2,8 @@ package com.cobanking.transaction.controller;
 
 import com.cobanking.common.api.BaseApiResponse;
 import com.cobanking.common.api.ServiceInfo;
+import com.cobanking.common.security.RequestSecurity;
+import com.cobanking.common.security.SecurityHeaders;
 import com.cobanking.transaction.dto.request.TransferRequest;
 import com.cobanking.transaction.dto.response.TransferResponse;
 import com.cobanking.transaction.service.TransactionService;
@@ -39,17 +41,21 @@ public class TransactionController {
     @PostMapping("/transfers")
     @Operation(summary = "Request a transfer", description = "Receives a transfer request using an idempotency key to prevent duplicate processing")
     public BaseApiResponse<TransferResponse> requestTransfer(
+            @RequestHeader(value = SecurityHeaders.AUTHENTICATED_TENANT_ID, required = false) String authenticatedTenantId,
             @Parameter(description = "Unique request key used to avoid duplicate transfer processing")
             @RequestHeader("Idempotency-Key") String idempotencyKey,
             @Valid @RequestBody TransferRequest request) {
+        RequestSecurity.requireTenantMatch(request.tenantId(), authenticatedTenantId);
         return BaseApiResponse.success("Transfer processed", transactionService.requestTransfer(idempotencyKey, request));
     }
 
     @GetMapping("/{transactionId}")
     @Operation(summary = "Get a transaction by UUID")
     public BaseApiResponse<TransferResponse> getTransaction(
+            @RequestHeader(value = SecurityHeaders.AUTHENTICATED_TENANT_ID, required = false) String authenticatedTenantId,
             @PathVariable UUID transactionId,
             @RequestParam UUID tenantId) {
+        RequestSecurity.requireTenantMatch(tenantId, authenticatedTenantId);
         return BaseApiResponse.success("Transaction found", transactionService.getTransaction(tenantId, transactionId));
     }
 }

@@ -6,6 +6,8 @@ import com.cobanking.account.dto.request.OpenAccountRequest;
 import com.cobanking.account.service.AccountService;
 import com.cobanking.common.api.BaseApiResponse;
 import com.cobanking.common.api.ServiceInfo;
+import com.cobanking.common.security.RequestSecurity;
+import com.cobanking.common.security.SecurityHeaders;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,23 +40,30 @@ public class AccountController {
 
     @PostMapping
     @Operation(summary = "Open an account", description = "Opens an account for a customer UUID and records an audit event after commit")
-    public BaseApiResponse<AccountResponse> openAccount(@Valid @RequestBody OpenAccountRequest request) {
+    public BaseApiResponse<AccountResponse> openAccount(
+            @RequestHeader(value = SecurityHeaders.AUTHENTICATED_TENANT_ID, required = false) String authenticatedTenantId,
+            @Valid @RequestBody OpenAccountRequest request) {
+        RequestSecurity.requireTenantMatch(request.tenantId(), authenticatedTenantId);
         return BaseApiResponse.success("Account opened", accountService.openAccount(request));
     }
 
     @GetMapping("/{accountId}")
     @Operation(summary = "Get an account by UUID")
     public BaseApiResponse<AccountResponse> getAccount(
+            @RequestHeader(value = SecurityHeaders.AUTHENTICATED_TENANT_ID, required = false) String authenticatedTenantId,
             @PathVariable UUID accountId,
             @RequestParam UUID tenantId) {
+        RequestSecurity.requireTenantMatch(tenantId, authenticatedTenantId);
         return BaseApiResponse.success("Account found", accountService.getAccount(tenantId, accountId));
     }
 
     @GetMapping("/{accountId}/validation")
     @Operation(summary = "Validate an account for transactions")
     public BaseApiResponse<AccountValidationResponse> validateAccount(
+            @RequestHeader(value = SecurityHeaders.AUTHENTICATED_TENANT_ID, required = false) String authenticatedTenantId,
             @PathVariable UUID accountId,
             @RequestParam UUID tenantId) {
+        RequestSecurity.requireTenantMatch(tenantId, authenticatedTenantId);
         return BaseApiResponse.success("Account validation completed",
                 accountService.validateAccount(tenantId, accountId));
     }

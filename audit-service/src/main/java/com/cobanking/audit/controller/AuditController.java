@@ -5,6 +5,8 @@ import com.cobanking.audit.dto.request.RecordAuditEventRequest;
 import com.cobanking.audit.service.AuditService;
 import com.cobanking.common.api.BaseApiResponse;
 import com.cobanking.common.api.ServiceInfo;
+import com.cobanking.common.security.RequestSecurity;
+import com.cobanking.common.security.SecurityHeaders;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -13,6 +15,7 @@ import java.util.UUID;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,13 +39,19 @@ public class AuditController {
 
     @PostMapping("/events")
     @Operation(summary = "Record an audit event")
-    public BaseApiResponse<AuditEventResponse> recordEvent(@Valid @RequestBody RecordAuditEventRequest request) {
+    public BaseApiResponse<AuditEventResponse> recordEvent(
+            @RequestHeader(value = SecurityHeaders.AUTHENTICATED_TENANT_ID, required = false) String authenticatedTenantId,
+            @Valid @RequestBody RecordAuditEventRequest request) {
+        RequestSecurity.requireTenantMatch(request.tenantId(), authenticatedTenantId);
         return BaseApiResponse.success("Audit event recorded", auditService.recordEvent(request));
     }
 
     @GetMapping("/events")
     @Operation(summary = "Get recent audit events for a tenant")
-    public BaseApiResponse<List<AuditEventResponse>> getRecentEvents(@RequestParam UUID tenantId) {
+    public BaseApiResponse<List<AuditEventResponse>> getRecentEvents(
+            @RequestHeader(value = SecurityHeaders.AUTHENTICATED_TENANT_ID, required = false) String authenticatedTenantId,
+            @RequestParam UUID tenantId) {
+        RequestSecurity.requireTenantMatch(tenantId, authenticatedTenantId);
         return BaseApiResponse.success("Audit events found", auditService.getRecentEvents(tenantId));
     }
 }

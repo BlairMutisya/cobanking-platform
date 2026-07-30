@@ -41,9 +41,9 @@ public class AuthServiceImpl implements AuthService {
         this.issuer = issuer;
         this.ttlMinutes = ttlMinutes;
         this.demoUsers = Map.of(
-                "customer.demo", new DemoUser("customer.demo", customerPassword, DEFAULT_TENANT_ID, List.of(Role.CUSTOMER.name())),
-                "bank.admin", new DemoUser("bank.admin", bankAdminPassword, DEFAULT_TENANT_ID, List.of(Role.BANK_ADMIN.name())),
-                "system.admin", new DemoUser("system.admin", systemAdminPassword, DEFAULT_TENANT_ID, List.of(Role.SYSTEM_ADMIN.name()))
+                "customer.demo", new DemoUser(UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), "customer.demo", customerPassword, DEFAULT_TENANT_ID, List.of(Role.CUSTOMER.name())),
+                "bank.admin", new DemoUser(UUID.fromString("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), "bank.admin", bankAdminPassword, DEFAULT_TENANT_ID, List.of(Role.BANK_ADMIN.name())),
+                "system.admin", new DemoUser(UUID.fromString("cccccccc-cccc-cccc-cccc-cccccccccccc"), "system.admin", systemAdminPassword, DEFAULT_TENANT_ID, List.of(Role.SYSTEM_ADMIN.name()))
         );
     }
 
@@ -61,6 +61,7 @@ public class AuthServiceImpl implements AuthService {
                 .subject(user.username())
                 .issuedAt(now)
                 .expiresAt(expiresAt)
+                .claim("userId", user.userId().toString())
                 .claim("tenantId", user.tenantId().toString())
                 .claim("roles", user.roles())
                 .build();
@@ -68,7 +69,7 @@ public class AuthServiceImpl implements AuthService {
         JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();
         String token = jwtEncoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();
 
-        return new LoginResponse(user.username(), user.tenantId(), user.roles(), "Bearer", token, expiresAt);
+        return new LoginResponse(user.userId(), user.username(), user.tenantId(), user.roles(), "Bearer", token, expiresAt);
     }
 
     private boolean matches(String providedPassword, String configuredPassword) {
@@ -77,6 +78,6 @@ public class AuthServiceImpl implements AuthService {
         return MessageDigest.isEqual(provided, configured);
     }
 
-    private record DemoUser(String username, String password, UUID tenantId, List<String> roles) {
+    private record DemoUser(UUID userId, String username, String password, UUID tenantId, List<String> roles) {
     }
 }

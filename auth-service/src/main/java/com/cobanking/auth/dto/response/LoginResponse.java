@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 public record LoginResponse(
+        UUID userId,
         String username,
         UUID tenantId,
         List<String> roles,

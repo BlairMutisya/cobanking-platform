@@ -55,6 +55,7 @@ The platform now starts its security model at the API gateway.
 
 - `auth-service` issues signed JWT access tokens.
 - `api-gateway` validates JWTs before forwarding business requests.
+- `api-gateway` strips any caller-supplied identity headers and replaces them with trusted values from the JWT.
 - Business endpoints require `Authorization: Bearer <token>` when called through `http://localhost:8080`.
 - Swagger, health checks, and `POST /auth/login` stay public.
 
@@ -65,6 +66,17 @@ Demo usernames:
 - `customer.demo`: role `CUSTOMER`
 - `bank.admin`: role `BANK_ADMIN`
 - `system.admin`: role `SYSTEM_ADMIN`
+
+Trusted internal headers forwarded by the gateway:
+
+- `X-Authenticated-User-Id`
+- `X-Authenticated-Username`
+- `X-Authenticated-Tenant-Id`
+- `X-Authenticated-Roles`
+
+Services should treat these headers as trusted only when traffic comes through the gateway. This is why the production path is gateway first.
+
+The first tenant guardrail is also in place: when a request arrives with `X-Authenticated-Tenant-Id`, services reject requests where the body or query `tenantId` does not match the authenticated tenant. Local direct service calls without that header still work for learning and internal service-to-service flows.
 
 ## Run Locally
 
