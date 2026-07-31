@@ -78,6 +78,14 @@ Services should treat these headers as trusted only when traffic comes through t
 
 The first tenant guardrail is also in place: when a request arrives with `X-Authenticated-Tenant-Id`, services reject requests where the body or query `tenantId` does not match the authenticated tenant. Local direct service calls without that header still work for learning and internal service-to-service flows.
 
+Gateway role rules:
+
+- `CUSTOMER`: can call customer/account/transaction read and transfer endpoints.
+- `BANK_ADMIN`: can create customers, open accounts, view audit events, inspect ledger batches, and call ESB routes.
+- `SYSTEM_ADMIN`: can use every secured route.
+
+This is intentionally simple for now. Later we will move from route-level roles into finer permissions such as `ACCOUNT_OPEN`, `TRANSFER_CREATE`, and `AUDIT_READ`.
+
 ## Run Locally
 
 Create your local environment file first:
